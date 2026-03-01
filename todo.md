@@ -1,0 +1,3 @@
+- sound
+- controller input not be ignored
+- run at more than 40 fps

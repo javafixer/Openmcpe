@@ -9,6 +9,11 @@
 #include <cstdio>
 #include <sys/types.h>
 
+#ifdef __VITA__
+#include <psp2/io/dirent.h>
+#include <psp2/io/stat.h>
+#endif
+
 #ifdef __APPLE__
 #include "MoveFolder.h"
 #endif
@@ -84,6 +89,26 @@ void ExternalFileLevelStorageSource::getLevelList(LevelSummaryList& dest)
 		FindClose(hFind);
 	} 
 
+#elif __VITA__
+
+	int dh = sceIoDopen(basePath.c_str());
+	if(dh < 0) {
+		LOGI("Error listing base folder %s: %d", basePath.c_str(), dh);
+		return;
+	}
+
+	while(1) {
+		SceIoDirent ent;
+		int ret = sceIoDread(dh, &ent);
+		if(ret == 0) break;
+		if(ret < 0) {
+			LOGI("Error listing base folder %s: %d", basePath.c_str(), ret);
+			return;
+		}
+		if(SCE_SO_ISDIR(ent.d_stat.st_mode)) {
+			addLevelSummaryIfExists(dest, ent.d_name);
+		}
+	}
 
 #else
 	DIR *dp;

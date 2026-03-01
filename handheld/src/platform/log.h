@@ -7,6 +7,10 @@
 	#include <stdio.h>
 #endif
 
+#ifdef __VITA__
+#include <psp2/kernel/clib.h>
+#endif
+
 #define __LOG_PUBLISH(...) do { __VA_ARGS__; } while(0)
 
 #ifdef ANDROID
@@ -24,6 +28,11 @@
 		#define LOGE(...) ((void)__android_log_print( ANDROID_LOG_ERROR, "MinecraftPE", __VA_ARGS__ ))
 		#define printf LOGI
 	#endif
+#elif defined(__VITA__)
+	#define LOGV(...) (sceClibPrintf(__VA_ARGS__))
+	#define LOGI(...) (sceClibPrintf(__VA_ARGS__))
+	#define LOGW(...) (sceClibPrintf(__VA_ARGS__))
+	#define LOGE(...) (sceClibPrintf(__VA_ARGS__))
 #else
 #ifdef PUBLISH
     #define LOGV(fmt, ...) __LOG_PUBLISH(__VA_ARGS__)

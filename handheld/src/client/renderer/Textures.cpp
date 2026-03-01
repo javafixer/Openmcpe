@@ -8,6 +8,9 @@
 
 /*static*/ int  Textures::textureChanges = 0;
 /*static*/ bool Textures::MIPMAP = false;
+const TextureId Textures::InvalidId;
+
+#define glCheck(f) do { int err = glGetError(); if(err != 0) { printf("GL Error: " #f ": %d\n", err); fflush(0); exit(1); } } while(0)
 
 Textures::Textures( Options* options_, AppPlatform* platform_ )
 :	clamp(false),
@@ -110,7 +113,7 @@ TextureId Textures::assignTexture( const std::string& resourceName, const Textur
         case TEXF_COMPRESSED_PVRTC_565:
         case TEXF_COMPRESSED_PVRTC_5551:
         {
-#if defined(__APPLE__)
+#if defined(__APPLE__) || defined(__VITA__)
             int fmt = img.transparent? GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG : GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG;
             glCompressedTexImage2D(GL_TEXTURE_2D, 0, fmt, img.w, img.h, 0, img.numBytes, img.data);
 #endif
@@ -132,10 +135,11 @@ TextureId Textures::assignTexture( const std::string& resourceName, const Textur
             else {
                 glTexImage2D2(GL_TEXTURE_2D, 0, mode, img.w, img.h, 0, mode, GL_UNSIGNED_BYTE, img.data);
             }
+			glCheck(glTexImage2D2);
             break;
     }
 
-    //LOGI("Adding id: %d to map\n", id);
+    LOGI("Adding id: %d to map\n", id);
 	idMap.insert(std::make_pair(resourceName, id));
 	loadedImages.insert(std::make_pair(id, img));
 
@@ -159,12 +163,14 @@ void Textures::tick(bool uploadToGraphicsCard)
 
         if (uploadToGraphicsCard) {
             tex->bindTexture(this);
-		    for (int xx = 0; xx < tex->replicate; xx++)
-		    for (int yy = 0; yy < tex->replicate; yy++) {
-			    glTexSubImage2D2(GL_TEXTURE_2D, 0, tex->tex % 16 * 16 + xx * 16,
-				    tex->tex / 16 * 16 + yy * 16, 16, 16,
-				    GL_RGBA, GL_UNSIGNED_BYTE, tex->pixels);
-		    }
+		    for (int xx = 0; xx < tex->replicate; xx++) {
+				for (int yy = 0; yy < tex->replicate; yy++) {
+					glTexSubImage2D2(GL_TEXTURE_2D, 0, tex->tex % 16 * 16 + xx * 16,
+						tex->tex / 16 * 16 + yy * 16, 16, 16,
+						GL_RGBA, GL_UNSIGNED_BYTE, tex->pixels);
+					glCheck(glTexSubImage2D2);
+				}
+			}
         }
 	}
 }

@@ -9,6 +9,15 @@
 
 #include "CThread.h"
 
+#if defined(__VITA__)
+#include <psp2/kernel/threadmgr.h>
+#endif
+
+static int vita_thread_entry(size_t argc, void* argv) {
+	void** args = (void**)argv;
+	((void(*)(void*))args[0])(args[1]);
+	return 0;
+}
 
 
 	CThread::CThread( pthread_fn threadFunc, void* threadParam )
@@ -46,6 +55,14 @@
 			&m_threadID			// pointer to receive task ID
 		);
 	#endif
+	#ifdef __VITA__
+		m_thread = sceKernelCreateThread("CThread", vita_thread_entry, 0x40, 0x4000, 0, 0, NULL);
+		void* args[2] = {
+			(void*)threadFunc,
+			threadParam
+		};
+		sceKernelStartThread(m_thread, 8, args);
+	#endif
 	}
 	
 	void CThread::sleep( const unsigned int millis )
@@ -55,6 +72,9 @@
 		#endif
 		#if defined(LINUX) || defined(ANDROID) || defined(__APPLE__) || defined(POSIX)
 			usleep(millis * 1000);
+		#endif
+		#if defined(__VITA__)
+			sceKernelDelayThread(millis * 1000);
 		#endif
 	}
 
@@ -66,6 +86,9 @@
 	#if defined(LINUX) || defined(ANDROID) || defined(__APPLE__) || defined(POSIX)
 		pthread_join(m_thread, NULL);
 		pthread_attr_destroy(&m_attributes);
+	#endif
+	#if defined(__VITA__)
+		// this is impossible on vita, oh well
 	#endif
 	}
 

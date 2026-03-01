@@ -8,6 +8,10 @@
 	#include <unistd.h>
 #endif
 
+#ifdef __VITA__
+#include <psp2/kernel/threadmgr.h>
+#endif
+
 // Ugly ass temporary solution;
 // since gettimeofday() returns seconds & microseconds since
 // Epoch(1970) rather than since computer started, getTimeMs()
@@ -70,6 +74,8 @@ int getTimeMs() {
 void sleepMs(int ms) {
 #ifdef WIN32
     Sleep(ms);
+#elif defined(__VITA__)
+	sceKernelDelayThread(ms * 1000);
 #else
 	usleep(ms * 1000);
 #endif

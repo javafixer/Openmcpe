@@ -37,4 +37,6 @@
     #include "main_rpi.h"
 #endif
 
-
+#ifdef __VITA__
+    #include "main_vita.h"
+#endif

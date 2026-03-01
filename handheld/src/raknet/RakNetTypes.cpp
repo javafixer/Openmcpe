@@ -20,6 +20,9 @@
 // winsock.h must be linked against WSock32.lib.  If these two are mixed up the flag won't work correctly
 #include <winsock2.h>
 
+#elif defined(__VITA__)
+#include <strings.h>
+
 #else
 #include <sys/socket.h>
 #include <netinet/in.h>

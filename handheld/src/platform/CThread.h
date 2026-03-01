@@ -11,9 +11,14 @@
 	#include <windows.h>
 #endif
 
+#ifdef __VITA__
+#include <psp2/kernel/threadmgr.h>
+#include <psp2/kernel/clib.h>
+#endif
+
 typedef void *( * pthread_fn )( void * );
 
-#if defined(LINUX) || defined(ANDROID) || defined(__APPLE__) || defined(POSIX)
+#if defined(LINUX) || defined(ANDROID) || defined(__APPLE__) || defined(POSIX) || defined(__VITA__)
 	#include <pthread.h>
 	#include <unistd.h>
 
@@ -46,6 +51,9 @@ typedef void *( * pthread_fn )( void * );
 	#ifdef MACOSX
 		TaskProc					mp_threadFunc;
 		MPTaskID					m_threadID;
+	#endif
+	#ifdef __VITA__
+		SceUID m_thread;
 	#endif
 	
 	};

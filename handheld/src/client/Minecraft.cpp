@@ -51,7 +51,10 @@
 
 #include "player/input/ControllerTurnInput.h"
 #include "player/input/XperiaPlayInput.h"
+#endif
 
+#if defined(__VITA__)
+#include "player/input/VitaInput.h"
 #endif
 
 #include "player/input/MouseTurnInput.h"
@@ -374,7 +377,7 @@ void Minecraft::prepareLevel(const std::string& title) {
 	for (int x = 8; x < (CHUNK_CACHE_WIDTH * CHUNK_WIDTH); x += CHUNK_WIDTH) {
         for (int z = 8; z < (CHUNK_CACHE_WIDTH * CHUNK_WIDTH); z += CHUNK_WIDTH) {
             progressStagePercentage = 100 * pp++ / Max;
-            //printf("level generation progress %d\n", progressStagePercentage);
+            //LOGI("level generation progress %d\n", progressStagePercentage);
 			B.start();
             level->getTile(x, 64, z);
 			B.stop();
@@ -1250,6 +1253,11 @@ void Minecraft::_reloadInput() {
 				new XperiaPlayInput(&options),
 				new ControllerTurnInput(2, ControllerTurnInput::MODE_DELTA),
 				new IBuildInput());
+		#elif defined(__VITA__)
+				inputHolder = new CustomInputHolder(
+					new VitaInput(&options),
+					new ControllerTurnInput(2, ControllerTurnInput::MODE_DELTA),
+					new IBuildInput());
 		#else
 			inputHolder = new CustomInputHolder(
 				new KeyboardInput(&options),
@@ -1369,7 +1377,7 @@ void Minecraft::_levelGenerated()
 		netCallback->levelGenerated(level);
 	}
 
-#if defined(WIN32) || defined(RPI)
+#if defined(WIN32) || defined(RPI) || defined(__VITA__)
 	if (_commandServer) {
 		delete _commandServer;
 	}

@@ -5,7 +5,7 @@
 #include "../Options.h"
 
 // Android should always run OPENGL_ES
-#if defined(ANDROID) || defined(__APPLE__) || defined(RPI)
+#if defined(ANDROID) || defined(__APPLE__) || defined(RPI) || defined(__VITA__)
     #define OPENGL_ES
 #endif
 
@@ -18,7 +18,7 @@
         #import <OpenGLES/ES1/glext.height>
     #else
         #include <GLES/gl.h>
-        #if defined(ANDROID)
+        #if defined(ANDROID) || defined(__VITA__)
             #include<GLES/glext.h>
         #endif
     #endif
