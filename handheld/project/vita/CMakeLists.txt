@@ -471,10 +471,15 @@ vita_create_vpk(minecraftcpp.vpk ${VITA_TITLEID} minecraftcpp.self
   NAME ${VITA_APP_NAME}
   ${VPK_ARGS}
 
-  FILE ${CMAKE_CURRENT_LIST_DIR}/module/libGLESv1_CM.suprx     module/libGLESv1_CM.suprx
-  FILE ${CMAKE_CURRENT_LIST_DIR}/module/libgpu_es4_ext.suprx   module/libgpu_es4_ext.suprx
-  FILE ${CMAKE_CURRENT_LIST_DIR}/module/libIMGEGL.suprx        module/libIMGEGL.suprx
-  FILE ${CMAKE_CURRENT_LIST_DIR}/module/libpvrPSP2_WSEGL.suprx module/libpvrPSP2_WSEGL.suprx
-  FILE ${CMAKE_CURRENT_LIST_DIR}/module/libc.suprx             sce_module/libc.suprx
-  FILE ${CMAKE_CURRENT_LIST_DIR}/module/libfios2.suprx         sce_module/libfios2.suprx
+  FILE ${CMAKE_CURRENT_LIST_DIR}/module/libGLESv1_CM.suprx     				module/libGLESv1_CM.suprx
+  FILE ${CMAKE_CURRENT_LIST_DIR}/module/libgpu_es4_ext.suprx   				module/libgpu_es4_ext.suprx
+  FILE ${CMAKE_CURRENT_LIST_DIR}/module/libIMGEGL.suprx        				module/libIMGEGL.suprx
+  FILE ${CMAKE_CURRENT_LIST_DIR}/module/libpvrPSP2_WSEGL.suprx 				module/libpvrPSP2_WSEGL.suprx
+  FILE ${CMAKE_CURRENT_LIST_DIR}/module/libc.suprx             				sce_module/libc.suprx
+  FILE ${CMAKE_CURRENT_LIST_DIR}/module/libfios2.suprx         				sce_module/libfios2.suprx
+  FILE ${CMAKE_CURRENT_LIST_DIR}/sce_sys/icon0.png             				sce_sys/icon0.png
+  FILE ${CMAKE_CURRENT_LIST_DIR}/sce_sys/pic0.png              				sce_sys/pic0.png
+  FILE ${CMAKE_CURRENT_LIST_DIR}/sce_sys/livearea/contents/bg.png    		sce_sys/livearea/contents/bg.png
+  FILE ${CMAKE_CURRENT_LIST_DIR}/sce_sys/livearea/contents/gate.png  		sce_sys/livearea/contents/gate.png
+  FILE ${CMAKE_CURRENT_LIST_DIR}/sce_sys/livearea/contents/template.xml  	sce_sys/livearea/contents/template.xml
 )
