@@ -213,9 +213,26 @@ inline int16_t touch_to_screen_y(int16_t y) {
 }
 
 void handleTouch() {
+	int ret;
 	static SceTouchData prevTouchData = {};
 	static SceTouchData currTouchData = {};
-	int ret;
+	static int firstFinger = -1;
+	static int fingerSlots[12] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
+
+	auto allocSlot = [&](int id) -> int {
+        for (int i = 0; i < 12; i++)
+            if (fingerSlots[i] == -1) { fingerSlots[i] = id; return i; }
+        return -1;
+    };
+    auto findSlot = [&](int id) -> int {
+        for (int i = 0; i < 12; i++)
+            if (fingerSlots[i] == id) return i;
+        return -1;
+    };
+    auto freeSlot = [&](int id) {
+        for (int i = 0; i < 12; i++)
+            if (fingerSlots[i] == id) { fingerSlots[i] = -1; return; }
+    };
 
 	prevTouchData = currTouchData;
 	ret = sceTouchRead(0, &currTouchData, 1);
@@ -223,80 +240,92 @@ void handleTouch() {
 		sceClibPrintf("sceTouchRead: %08x\n", ret);
 		return;
 	}
-	for (int i = 0; i < currTouchData.reportNum; i++) {
-		SceTouchReport* curr = &currTouchData.report[i];
-		bool found = false;
-		for (int j = 0; j < prevTouchData.reportNum; j++) {
-			if (prevTouchData.report[j].id == curr->id) {
-				found = true;
-				break;
-			}
-		}
-		if (!found) {
-			int16_t x = touch_to_screen_x(curr->x);
-			int16_t y = touch_to_screen_y(curr->y);
-			sceClibPrintf("touchDown %d %d %d\n", curr->id, x, y);
-			Mouse::feed(1, 1, x, y);
-			Multitouch::feed(1, 1, x, y, 0);
-		}
-	}
 
-	for (int i = 0; i < currTouchData.reportNum; i++) {
-		SceTouchReport* curr = &currTouchData.report[i];
-		for (int j = 0; j < prevTouchData.reportNum; j++) {
-			if (prevTouchData.report[j].id == curr->id) {
-				int16_t x = touch_to_screen_x(curr->x);
-				int16_t y = touch_to_screen_y(curr->y);
-				sceClibPrintf("touchMove %d %d %d\n", curr->id, x, y);
-				Mouse::feed(0, 0, x, y);
-				Multitouch::feed(1, 0, x, y, 0);
-				break;
-			}
-		}
-	}
+	// touchDown
+    for (int i = 0; i < currTouchData.reportNum; i++) {
+        SceTouchReport* curr = &currTouchData.report[i];
+        bool found = false;
+        for (int j = 0; j < prevTouchData.reportNum; j++)
+            if (prevTouchData.report[j].id == curr->id) { found = true; break; }
+        if (!found) {
+            int slot = allocSlot(curr->id);
+            if (slot == -1) continue;
+            int16_t x = touch_to_screen_x(curr->x);
+            int16_t y = touch_to_screen_y(curr->y);
+            sceClibPrintf("touchDown %d %d %d\n", curr->id, x, y);
+            if (slot == 0) Mouse::feed(1, 1, x, y);
+            Multitouch::feed(1, 1, x, y, slot);
+        }
+    }
 
-	for (int i = 0; i < prevTouchData.reportNum; i++) {
-		SceTouchReport* prev = &prevTouchData.report[i];
-		bool found = false;
-		for (int j = 0; j < currTouchData.reportNum; j++) {
-			if (currTouchData.report[j].id == prev->id) {
-				found = true;
-				break;
-			}
-		}
-		if (!found) {
-			int16_t x = touch_to_screen_x(prev->x);
-			int16_t y = touch_to_screen_y(prev->y);
-			sceClibPrintf("touchUp %d %d %d\n", prev->id, x, y);
-			Mouse::feed(1, 0, x, y);
-			Multitouch::feed(1, 0, x, y, 0);
-		}
-	}
+    // touchMove
+    for (int i = 0; i < currTouchData.reportNum; i++) {
+        SceTouchReport* curr = &currTouchData.report[i];
+        for (int j = 0; j < prevTouchData.reportNum; j++) {
+            if (prevTouchData.report[j].id == curr->id) {
+                int slot = findSlot(curr->id);
+                if (slot == -1) break;
+                int16_t x = touch_to_screen_x(curr->x);
+                int16_t y = touch_to_screen_y(curr->y);
+                sceClibPrintf("touchMove %d %d %d\n", curr->id, x, y);
+                if (slot == 0) Mouse::feed(0, 0, x, y);
+                Multitouch::feed(1, 0, x, y, slot);
+                break;
+            }
+        }
+    }
+
+    // touchUp
+    for (int i = 0; i < prevTouchData.reportNum; i++) {
+        SceTouchReport* prev = &prevTouchData.report[i];
+        bool found = false;
+        for (int j = 0; j < currTouchData.reportNum; j++)
+            if (currTouchData.report[j].id == prev->id) { found = true; break; }
+        if (!found) {
+            int slot = findSlot(prev->id);
+            if (slot == -1) continue;
+            int16_t x = touch_to_screen_x(prev->x);
+            int16_t y = touch_to_screen_y(prev->y);
+            sceClibPrintf("touchUp %d %d %d\n", prev->id, x, y);
+            if (slot == 0) Mouse::feed(1, 0, x, y);
+            Multitouch::feed(1, 0, x, y, slot);
+            freeSlot(prev->id);
+        }
+    }
 }
 
-static void trackpadPress(int stick, float x, float y) {
-    Controller::feed(stick, Controller::STATE_TOUCH, x, y);
+#define CONTROLLER_REMAP(x, y) 
+
+static void trackpadPress(int stick, uint8_t x, uint8_t y) {
+	float stickX = ((float)x - 128.f) / 128.f;
+	float stickY = ((float)y - 128.f) / 128.f;
+    Controller::feed(stick, Controller::STATE_TOUCH, stickX, stickY);
 }
-static void trackpadMove(int stick, float x, float y) {
-    Controller::feed(stick, Controller::STATE_MOVE, x, y);
+static void trackpadMove(int stick, uint8_t x, uint8_t y) {
+	float stickX = ((float)x - 128.f) / 128.f;
+	float stickY = ((float)y - 128.f) / 128.f;
+    Controller::feed(stick, Controller::STATE_MOVE, stickX, stickY);
 }
-static void trackpadRelease(int stick, float x, float y) {
-    Controller::feed(stick, Controller::STATE_RELEASE, x, y);
+static void trackpadRelease(int stick, uint8_t x, uint8_t y) {
+	float stickX = ((float)x - 128.f) / 128.f;
+	float stickY = ((float)y - 128.f) / 128.f;
+    Controller::feed(stick, Controller::STATE_RELEASE, stickX, stickY);
 }
 
 #define BTN_STATE(buttons, mask) (((buttons & mask) != 0) ? 1 : 0)
 
 void handleController() {
-	SceCtrlData ctrl;
-	static SceCtrlData prevCtrl;
-	prevCtrl = ctrl;
+	SceCtrlData ctrl = {0};
+	static SceCtrlData prevCtrl = {0};
 	sceCtrlReadBufferPositive(0, &ctrl, 1);
-	sceClibPrintf("ctrl.rx = %d ctrl.ry = %d\n", ctrl.rx, ctrl.ry);
-	trackpadPress(1, (float)ctrl.rx/255.f, (float)ctrl.ry/255.f);
+
+	//sceClibPrintf("ctrl.rx = %d ctrl.ry = %d\n", ctrl.rx, ctrl.ry);
+    trackpadPress(2, ctrl.rx, ctrl.ry);
 
 	uint32_t changedButtons = ctrl.buttons ^ prevCtrl.buttons;
+	prevCtrl = ctrl;
 	if(changedButtons) {
-		sceClibPrintf("changedButtons = %08x\n", changedButtons);
+		//sceClibPrintf("changedButtons = %08x\n", changedButtons);
 	}
 	if(changedButtons & SCE_CTRL_UP) {
 		Keyboard::feed(Keyboard::KEY_W, BTN_STATE(ctrl.buttons, SCE_CTRL_UP));

@@ -1245,6 +1245,9 @@ void Minecraft::_reloadInput() {
 #ifndef STANDALONE_SERVER
 	delete inputHolder;
 
+	#if defined(__VITA__)
+		inputHolder = new VitaInputHolder(this, &options);
+	#else
 	if (useTouchscreen()) {
 		inputHolder = new TouchInputHolder(this, &options);
 	} else {
@@ -1253,11 +1256,6 @@ void Minecraft::_reloadInput() {
 				new XperiaPlayInput(&options),
 				new ControllerTurnInput(2, ControllerTurnInput::MODE_DELTA),
 				new IBuildInput());
-		#elif defined(__VITA__)
-				inputHolder = new CustomInputHolder(
-					new VitaInput(&options),
-					new ControllerTurnInput(2, ControllerTurnInput::MODE_DELTA),
-					new IBuildInput());
 		#else
 			inputHolder = new CustomInputHolder(
 				new KeyboardInput(&options),
@@ -1265,6 +1263,7 @@ void Minecraft::_reloadInput() {
 				new MouseBuildInput());
 		#endif
 	}
+	#endif
 
 	mouseHandler.setTurnInput(inputHolder->getTurnInput());
 	if (level && player) {

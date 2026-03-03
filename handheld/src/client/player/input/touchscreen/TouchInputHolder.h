@@ -88,7 +88,7 @@ public:
 		_sensitivity = sensitivity;
 	}
 
-	virtual void onConfigChanged(const Config& c) {
+	void onConfigChanged(const Config& c) override {
 		if (false && _options->isJoyTouchArea) {
 			int touchWidth = c.width - (int)inventoryArea._x1;
 			if (touchWidth > (int)c.minecraft->pixelCalc.millimetersToPixels(60))
@@ -150,7 +150,7 @@ public:
 	//
 	// Implementation for the ITurnInput part
 	//
-	TurnDelta getTurnDelta() {
+	TurnDelta getTurnDelta() override {
 		float dx = 0, dy = 0;
 		const float now = getTimeS();
 
@@ -304,7 +304,7 @@ public:
 	//
 	// Implementation for the IBuildInput part
 	//
-	virtual bool tickBuild(Player* player, BuildActionIntention* bai) {
+	bool tickBuild(Player* player, BuildActionIntention* bai) override {
 		_lastPlayer = player;
 
 		if (state == State_Destroy) {
