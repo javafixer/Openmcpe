@@ -12,10 +12,12 @@
 #include <psp2/kernel/modulemgr.h>
 #include <psp2/sysmodule.h>
 #include <psp2/common_dialog.h>
-#include <psp2/kernel/clib.h>
 #include <psp2/touch.h>
 #include <psp2/ctrl.h>
 #include <psp2/gxm.h>
+#include <psp2/kernel/clib.h>
+#include <psp2/io/fcntl.h>
+#include <psp2/io/stat.h>
 #include <psp2/net/net.h>
 #include <psp2/apputil.h>
 #include <psp2/net/netctl.h>
@@ -47,6 +49,44 @@ public:
 
 	int getScreenWidth() override { return width; }
 	int getScreenHeight() override { return height; }
+
+
+	BinaryBlob readAssetFile(const std::string& filename) {
+		std::string fullAssetPath = ("app0:data/" + filename);
+
+		sceClibPrintf("fullAssetPath: %s\n", fullAssetPath.c_str());
+		SceIoStat stat;
+		int ret = sceIoGetstat(fullAssetPath.c_str(), &stat);
+		if(ret < 0) {
+			sceClibPrintf("failed to stat: %x %s\n", ret,fullAssetPath.c_str());
+			return BinaryBlob();
+		}
+
+		SceUID fd = sceIoOpen(fullAssetPath.c_str(), SCE_O_RDONLY, 0777);
+
+		if(fd < 0) {
+			sceClibPrintf("failed to open: %x %s\n", fd, fullAssetPath.c_str());
+			return BinaryBlob();
+		}
+
+
+		BinaryBlob blob;
+		blob.size = stat.st_size;
+		blob.data = new unsigned char[blob.size];
+
+		int rd = sceIoRead(fd, blob.data, blob.size);
+		sceIoClose(fd);
+
+		if(rd != blob.size) {
+			sceClibPrintf("wrong size: %x %s\n", rd, fullAssetPath.c_str());
+
+			return BinaryBlob();
+		}
+
+		sceClibPrintf("read %x bytes from %s\n", rd, fullAssetPath.c_str());
+
+		return blob;
+	}
 
     TextureData loadTexture(const std::string& filename_, bool textureFolder) override {
 		TextureData out;

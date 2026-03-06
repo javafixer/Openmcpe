@@ -138,12 +138,12 @@ void OptionsScreen::generateOptionScreens() {
 // 	static const int arr[] = {5,4,3,15};
 // 	std::vector<int> vec (arr, arr + sizeof(arr) / sizeof(arr[0]) );
 // 	optionPanes[0]->createStepSlider(minecraft, mojangGroup, "This works?", &Options::Option::DIFFICULTY, vec);
-// 
+//
 // 	// Game Pane
 // 	int gameGroup = optionPanes[1]->createOptionsGroup("Game");
 // 	optionPanes[1]->createToggle(gameGroup, "Third person camera", &Options::Option::THIRD_PERSON);
 // 	optionPanes[1]->createToggle(gameGroup, "Server visible", &Options::Option::SERVER_VISIBLE);
-// 	
+//
 // 	// Input Pane
 // 	int controlsGroup = optionPanes[2]->createOptionsGroup("Controls");
 // 	optionPanes[2]->createToggle(controlsGroup, "Invert X-axis", &Options::Option::INVERT_MOUSE);
@@ -152,7 +152,7 @@ void OptionsScreen::generateOptionScreens() {
 // 	optionPanes[2]->createToggle(controlsGroup, "Split touch controls", &Options::Option::USE_TOUCH_JOYPAD);
 // 	int feedBackGroup = optionPanes[2]->createOptionsGroup("Feedback");
 // 	optionPanes[2]->createToggle(feedBackGroup, "Vibrate on destroy", &Options::Option::DESTROY_VIBRATION);
-// 
+//
 // 	int graphicsGroup = optionPanes[3]->createOptionsGroup("Graphics");
 // 	optionPanes[3]->createProgressSlider(minecraft, graphicsGroup, "Gui Scale", &Options::Option::PIXELS_PER_MILLIMETER, 3, 4);
 // 	optionPanes[3]->createToggle(graphicsGroup, "Fancy Graphics", &Options::Option::INVERT_MOUSE);
