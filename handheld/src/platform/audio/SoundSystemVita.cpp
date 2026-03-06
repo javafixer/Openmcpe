@@ -66,7 +66,6 @@ SoundSystemVita::SoundSystemVita()
     _ngsSys(SCE_NGS_INVALID_HANDLE),
     _rackPlayer(SCE_NGS_INVALID_HANDLE),
     _rackEq(SCE_NGS_INVALID_HANDLE) {
-    _buffers.reserve(64);
     init();
 }
 

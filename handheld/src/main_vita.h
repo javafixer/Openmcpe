@@ -293,7 +293,7 @@ void handleTouch() {
             if (slot == -1) continue;
             int16_t x = touch_to_screen_x(curr->x);
             int16_t y = touch_to_screen_y(curr->y);
-            sceClibPrintf("touchDown %d %d %d\n", curr->id, x, y);
+            //sceClibPrintf("touchDown %d %d %d\n", curr->id, x, y);
             if (slot == 0) Mouse::feed(MouseAction::ACTION_LEFT, MouseAction::DATA_DOWN, x, y);
             Multitouch::feed(1, MouseAction::DATA_DOWN, x, y, slot);
         }
@@ -308,7 +308,7 @@ void handleTouch() {
                 if (slot == -1) break;
                 int16_t x = touch_to_screen_x(curr->x);
                 int16_t y = touch_to_screen_y(curr->y);
-                sceClibPrintf("touchMove %d %d %d\n", curr->id, x, y);
+                //sceClibPrintf("touchMove %d %d %d\n", curr->id, x, y);
                 if (slot == 0) Mouse::feed(MouseAction::ACTION_MOVE, MouseAction::DATA_DOWN, x, y);
                 Multitouch::feed(1, MouseAction::DATA_DOWN, x, y, slot);
                 break;
@@ -327,7 +327,7 @@ void handleTouch() {
             if (slot == -1) continue;
             int16_t x = touch_to_screen_x(prev->x);
             int16_t y = touch_to_screen_y(prev->y);
-            sceClibPrintf("touchUp %d %d %d\n", prev->id, x, y);
+            //sceClibPrintf("touchUp %d %d %d\n", prev->id, x, y);
             if (slot == 0) Mouse::feed(MouseAction::ACTION_LEFT, MouseAction::DATA_UP, x, y);
             Multitouch::feed(1, MouseAction::DATA_UP, x, y, slot);
             freeSlot(prev->id);
