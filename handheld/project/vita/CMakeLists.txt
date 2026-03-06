@@ -171,7 +171,7 @@ add_executable(minecraftcpp
   ${HANDHELD}/network/ServerSideNetworkHandler.cpp
   #${HANDHELD}/platform/audio/SoundSystemSL.cpp
   #${HANDHELD}/platform/audio/SoundSystemAL.cpp
-  #${HANDHELD}/platform/audio/SoundSystemVita.cpp
+  ${HANDHELD}/platform/audio/SoundSystemVita.cpp
   ${HANDHELD}/platform/CThread.cpp
   ${HANDHELD}/platform/input/Keyboard.cpp
   ${HANDHELD}/platform/input/Mouse.cpp
@@ -420,6 +420,16 @@ target_link_directories(minecraftcpp PRIVATE
   ${CMAKE_CURRENT_LIST_DIR}/lib
 )
 
+add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/SceNgs/libSceNgs_stub.a
+  COMMAND vita-libs-gen ${CMAKE_CURRENT_LIST_DIR}/lib/SceNgs.yml ${CMAKE_CURRENT_BINARY_DIR}/SceNgs
+  COMMAND make -C ${CMAKE_CURRENT_BINARY_DIR}/SceNgs
+)
+add_custom_target(SceNgs_target DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/SceNgs/libSceNgs_stub.a)
+
+add_library(SceNgs INTERFACE)
+target_link_libraries(SceNgs INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/SceNgs/libSceNgs_stub.a)
+add_dependencies(SceNgs SceNgs_target)
+
 target_link_libraries(minecraftcpp PUBLIC
   IMGEGL_stub_weak
   gpu_es4_ext_stub
@@ -434,6 +444,7 @@ target_link_libraries(minecraftcpp PUBLIC
   SceAppUtil_stub
   SceNetCtl_stub
 
+  SceNgs
   raknet
   pthread
   png

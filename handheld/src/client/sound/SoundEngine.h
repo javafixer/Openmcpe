@@ -7,6 +7,8 @@
 	#include "../../platform/audio/SoundSystemSL.h"
 #elif defined(__APPLE__)
     #include "../../platform/audio/SoundSystemAL.h"
+#elif defined(__VITA__)
+	#include "../../platform/audio/SoundSystemVita.h"
 #else
 	#include "../../platform/audio/SoundSystem.h"
 #endif
@@ -25,6 +27,8 @@ class SoundEngine
 		SoundSystemSL soundSystem;
     #elif defined(__APPLE__)
         SoundSystemAL soundSystem;
+	#elif defined(__VITA__)
+		SoundSystemVita soundSystem;
 	#else
 	    SoundSystem soundSystem;
 	#endif
