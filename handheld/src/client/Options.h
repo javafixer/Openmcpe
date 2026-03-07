@@ -121,7 +121,7 @@ public:
 	//note: sensitivity is transformed in Options::update
 	float sensitivity;
 	bool invertYMouse;
-	float viewDistance;
+	int viewDistance;
 	bool bobView;
 	bool anaglyph3d;
 	bool vsync;

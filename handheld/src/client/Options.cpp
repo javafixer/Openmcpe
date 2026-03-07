@@ -40,7 +40,7 @@ void Options::initDefaultValues() {
 	sound = 1;
 	sensitivity = 0.5f;
 	invertYMouse = false;
-	viewDistance = 0.5f;
+	viewDistance = 2;
 	bobView = true;
 	anaglyph3d = false;
 	vsync = true;
@@ -103,7 +103,7 @@ void Options::initDefaultValues() {
 	keyMappings[k++] = &keyMenuCancel;
 
 	#if defined(ANDROID) || defined(__APPLE__) || defined(RPI)
-	viewDistance = 2.0f;
+	viewDistance = 2;
 	thirdPersonView = 0;
 	useMouseForDigging = false;
 	fancyGraphics = true;
@@ -238,7 +238,7 @@ void Options::set(const Options::Option* item, int value) {
 
 
 void Options::update() {
-	viewDistance = 0.5f;
+	viewDistance = 2;
 	highPerformance = false;
 	sensitivity = 0.5f;
 	StringVector optionStrings = optionsFile.getOptionStrings();
@@ -256,9 +256,9 @@ void Options::update() {
 			}
 		}
 		if (key == RenderDistanceKey) {
-			readFloat(value, viewDistance);
-			if (viewDistance > 3.0f) viewDistance = 3.0f;
-			if (viewDistance < 0.0f) viewDistance = 0.0f;
+			readInt(value, viewDistance);
+			if (viewDistance > 6) viewDistance = 6;
+			if (viewDistance < 1) viewDistance = 1;
 		}
 		if (key == OptionStrings::Graphics_HighPerformance) {
 			readBool(value, highPerformance);
