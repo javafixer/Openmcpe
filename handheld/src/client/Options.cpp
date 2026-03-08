@@ -46,7 +46,7 @@ void Options::initDefaultValues() {
 	//useMouseForDigging = true;
 
 	//skin     = "Default";
-	username = "Steve";
+	username = minecraft->platform()->defaultUsername();
 	serverVisible = true;
 
 	keyUp	 = KeyMapping("key.forward", Keyboard::KEY_W);
@@ -65,7 +65,6 @@ void Options::initDefaultValues() {
 	keyUse   = KeyMapping("key.use", Keyboard::KEY_U);
 	#endif
 	#ifdef __VITA__
-	username   = "Vita"; // TODO: read from np libraries
 	keyCraft   = KeyMapping("key.crafting", Keyboard::KEY_C);
 	keyUse     = KeyMapping("key.use", Keyboard::KEY_X);
 	keyDestroy = KeyMapping("key.destroy", Keyboard::KEY_Z);
@@ -156,7 +155,7 @@ Options::Option::USE_TOUCHSCREEN	 (16, "options.usetouchscreen", false, true),
 Options::Option::USE_TOUCH_JOYPAD	 (17, "options.usetouchpad", false, true),
 Options::Option::DESTROY_VIBRATION   (18, "options.destroyvibration", false, true),
 Options::Option::PIXELS_PER_MILLIMETER(19, "options.pixelspermilimeter", true, false),
-Options::Option::RENDER_DEBUG	(20, "options.renderDebug", false, true);
+Options::Option::RENDER_DEBUG		  (20, "options.renderDebug", false, true);
 
 const float Options::SOUND_MIN_VALUE = 0.0f;
 const float Options::SOUND_MAX_VALUE = 1.0f;
@@ -285,6 +284,7 @@ void Options::update() {
 		if (key == OptionStrings::Graphics_AmbientOcclusion) readBool(value, ambientOcclusion);
 		if (key == OptionStrings::Game_ViewBobbing) readBool(value, bobView);
 		if (key == OptionStrings::Graphics_Anaglyph3d) readBool(value, anaglyph3d);
+		if (key == OptionStrings::Graphics_LimitFramerate) readBool(value, limitFramerate);
 	}
 }
 
@@ -308,6 +308,7 @@ void Options::save() {
 	addOptionToSaveOutput(stringVec, OptionStrings::Graphics_Fancy, fancyGraphics);
 	addOptionToSaveOutput(stringVec, OptionStrings::Graphics_AmbientOcclusion, ambientOcclusion);
 	addOptionToSaveOutput(stringVec, OptionStrings::Graphics_Anaglyph3d, anaglyph3d);
+	addOptionToSaveOutput(stringVec, OptionStrings::Graphics_LimitFramerate, limitFramerate);
 
 	addOptionToSaveOutput(stringVec, OptionStrings::Audio_Music, music);
 	addOptionToSaveOutput(stringVec, OptionStrings::Audio_Sound, sound);

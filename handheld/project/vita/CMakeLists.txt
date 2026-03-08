@@ -443,6 +443,7 @@ target_link_libraries(minecraftcpp PUBLIC
   SceNet_stub
   SceAppUtil_stub
   SceNetCtl_stub
+  SceNpManager_stub
 
   SceNgs
   raknet

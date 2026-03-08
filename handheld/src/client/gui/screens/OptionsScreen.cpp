@@ -46,8 +46,14 @@ OptionsScreen::~OptionsScreen() {
 
 void OptionsScreen::init() {
 	bHeader = new Touch::THeader(0, "Options");
-	btnPrevPage = new Button(201, "<");
-	btnNextPage = new Button(202, ">");
+	if(minecraft->useTouchscreen()) {
+		btnPrevPage = new Touch::TButton(201, "<");
+		btnNextPage = new Touch::TButton(202, ">");
+	}
+	else {
+		btnPrevPage = new Button(201, "<");
+		btnNextPage = new Button(202, ">");
+	}
 	btnClose = new ImageButton(1, "");
 	ImageDef def;
 	def.name = "gui/touchgui.png";
@@ -156,6 +162,7 @@ void OptionsScreen::generateOptionScreens() {
 			.addOptionItem(&Options::Option::VIEW_BOBBING, minecraft)
 			.addOptionItem(&Options::Option::ANAGLYPH, minecraft)
 			.addOptionItem(&Options::Option::RENDER_DEBUG, minecraft)
+			.addOptionItem(&Options::Option::LIMIT_FRAMERATE, minecraft)
             .addOptionItem(&Options::Option::GUI_SCALE, minecraft);
 	} else if (currentPage == 1) {
 		optionPane->createOptionsGroup("options.group.game")

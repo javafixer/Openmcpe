@@ -5,7 +5,7 @@
 
 #include "EGL/egl.h"
 #include "EGL/eglext.h"
-
+#include "np_mgr.h"
 
 #include <psp2/kernel/modulemgr.h>
 #include <psp2/sysmodule.h>
@@ -31,9 +31,9 @@
 int _newlib_heap_size_user   = 64 * 1024 * 1024;
 unsigned int sceLibcHeapSize = 3 * 1024 * 1024;
 
-
 static bool _inited_egl = false;
 static bool _app_inited = false;
+
 
 static void initPvrPSP2() {
 	const char* libgpu_es4_ext =	"app0:module/libgpu_es4_ext.suprx";
@@ -323,6 +323,7 @@ int main(int argc, char** argv) {
 	int ret;
 	sceSysmoduleLoadModule(SCE_SYSMODULE_NET);
 	sceSysmoduleLoadModule(SCE_SYSMODULE_APPUTIL);
+	sceSysmoduleLoadModule(SCE_SYSMODULE_NP);
 
 	static char netMem[0x10000];
 	SceNetInitParam netInit = {
@@ -330,14 +331,18 @@ int main(int argc, char** argv) {
 		.size = sizeof(netMem),
 		.flags = 0
 	};
-	sceNetInit(&netInit);
-	sceNetCtlInit();
+	checkSce(sceNetInit(&netInit));
+	checkSce(sceNetCtlInit());
 
 	SceAppUtilInitParam initParam = {0};
 	SceAppUtilBootParam bootParam = {0};
 
-	sceAppUtilInit(&initParam, &bootParam);
-	sceAppUtilCacheMount();
+	checkSce(sceAppUtilInit(&initParam, &bootParam));
+
+	SceNpCommunicationConfig cfg = {0};
+	checkSce(sceNpInit(&cfg, nullptr));
+
+	// checkSce(sceAppUtilCacheMount());
 
 	MAIN_CLASS* app = new MAIN_CLASS();
 	// savedata0 is too slow .. (probably bcs pfs)
@@ -370,6 +375,10 @@ int main(int argc, char** argv) {
 	}
 
 	deinitEgl(&context);
+
+	sceNpTerm();
+	sceAppUtilShutdown();
+
 	return 0;
 }
 

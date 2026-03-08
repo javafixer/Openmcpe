@@ -43,7 +43,6 @@ void OptionsFile::save(const StringVector& settings) {
 
 	if(pFile != NULL) {
 		for(StringVector::const_iterator it = settings.begin(); it != settings.end(); ++it) {
-			LOGI("%s\n", it->c_str());
 			fprintf(pFile, "%s\n", it->c_str());
 		}
 		fclose(pFile);

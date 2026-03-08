@@ -11,6 +11,7 @@ public:
     static const char* Graphics_RenderDistance;
     static const char* Graphics_AmbientOcclusion;
     static const char* Graphics_Anaglyph3d;
+    static const char* Graphics_LimitFramerate;
     static const char* Graphics_Debug;
 
     static const char* Controls_Sensitivity;

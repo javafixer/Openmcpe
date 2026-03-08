@@ -221,7 +221,7 @@ public:
 			anaglyph3d = !anaglyph3d;
 			//minecraft->textures.reloadAll();
 		}
-		if (option == &Option::LIMIT_FRAMERATE) {}
+		if (option == &Option::LIMIT_FRAMERATE) limitFramerate = !limitFramerate;
 		if (option == &Option::DIFFICULTY) (difficulty == Difficulty::NORMAL) ? difficulty = Difficulty::PEACEFUL : difficulty = Difficulty::NORMAL;
 		if (option == &Option::GRAPHICS) {
 			fancyGraphics = !fancyGraphics;

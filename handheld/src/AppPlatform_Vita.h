@@ -10,6 +10,8 @@
 
 #include "NinecraftApp.h"
 
+#include "np_mgr.h"
+
 static const int width = 960;
 static const int height = 544;
 
@@ -28,21 +30,30 @@ public:
 
 	bool isPowerVR() override { return true; }
 
+	std::string defaultUsername() override {
+		SceNpId npid;
+		if(sceNpManagerGetNpId(&npid) >= 0) {
+			return std::string(npid.handle.data);
+		}
+
+		return "Vita";
+	}
+
 	BinaryBlob readAssetFile(const std::string& filename) override {
 		std::string fullAssetPath = ("app0:data/" + filename);
 
-		sceClibPrintf("fullAssetPath: %s\n", fullAssetPath.c_str());
+		LOGI("fullAssetPath: %s\n", fullAssetPath.c_str());
 		SceIoStat stat;
 		int ret = sceIoGetstat(fullAssetPath.c_str(), &stat);
 		if(ret < 0) {
-			sceClibPrintf("failed to stat: %x %s\n", ret,fullAssetPath.c_str());
+			LOGI("failed to stat: %x %s\n", ret,fullAssetPath.c_str());
 			return BinaryBlob();
 		}
 
 		SceUID fd = sceIoOpen(fullAssetPath.c_str(), SCE_O_RDONLY, 0777);
 
 		if(fd < 0) {
-			sceClibPrintf("failed to open: %x %s\n", fd, fullAssetPath.c_str());
+			LOGI("failed to open: %x %s\n", fd, fullAssetPath.c_str());
 			return BinaryBlob();
 		}
 
@@ -55,12 +66,12 @@ public:
 		sceIoClose(fd);
 
 		if(rd != blob.size) {
-			sceClibPrintf("wrong size: %x %s\n", rd, fullAssetPath.c_str());
+			LOGI("wrong size: %x %s\n", rd, fullAssetPath.c_str());
 
 			return BinaryBlob();
 		}
 
-		sceClibPrintf("read %x bytes from %s\n", rd, fullAssetPath.c_str());
+		LOGI("read %x bytes from %s\n", rd, fullAssetPath.c_str());
 
 		return blob;
 	}
