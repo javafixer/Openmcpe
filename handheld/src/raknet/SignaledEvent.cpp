@@ -156,7 +156,8 @@ void SignaledEvent::WaitOnEvent(int timeoutMs)
 
 
 #elif defined(__VITA__)
-	sceKernelWaitCond(cond, NULL);
+	unsigned int timeoutµs = timeoutMs * 1000;
+	sceKernelWaitCond(cond, &timeoutµs);
 #else
 
 	// If was previously set signaled, just unset and return

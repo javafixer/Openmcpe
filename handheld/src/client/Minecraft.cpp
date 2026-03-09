@@ -539,12 +539,14 @@ void Minecraft::tick(int nTick, int maxTick) {
 	//
 	if (isGeneratingLevel) {
 		return;
-	} else if (!_hasSignaledGeneratingLevelFinished) {
+	}
+	if (!_hasSignaledGeneratingLevelFinished) {
 		if (generateLevelThread) {
 			delete generateLevelThread;
 			generateLevelThread = NULL;
 		}
 		_levelGenerated();
+		_hasSignaledGeneratingLevelFinished = true;
 	}
 
 	//
@@ -1440,7 +1442,6 @@ void Minecraft::_levelGenerated()
 	// Hack to (hopefully) get the players to show (note: in LevelListener
 	// instead, since adding yourself always generates a entityAdded)
 	//EntityRenderDispatcher::getInstance()->onGraphicsReset();
-	_hasSignaledGeneratingLevelFinished = true;
 }
 
 Player* Minecraft::respawnPlayer(int playerId) {

@@ -1,6 +1,8 @@
 #ifndef NET_MINECRAFT_CLIENT__Minecraft_H__
 #define NET_MINECRAFT_CLIENT__Minecraft_H__
 
+#include <atomic>
+
 #include "Options.h"
 #ifndef STANDALONE_SERVER
 #include "MouseHandler.h"
@@ -195,16 +197,16 @@ public:
     PixelCalc pixelCalcUi;
 
 	HitResult hitResult;
-	volatile int progressStagePercentage;
+	std::atomic<int> progressStagePercentage;
 
 	// This field is initialized in main()
 	// It sets the base path to where worlds can be written (sdcard on android)
 	std::string externalStoragePath;
 	std::string externalCacheStoragePath;
-protected:
+	protected:
 	Timer timer;
     // @note @attn @warn: this is dangerous as fuck!
-	volatile bool isGeneratingLevel;
+	std::atomic<bool> isGeneratingLevel;
 	bool _hasSignaledGeneratingLevelFinished;
 
 	LevelStorageSource* storageSource;
