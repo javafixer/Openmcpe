@@ -42,7 +42,20 @@ void TextBox::render( Minecraft* minecraft, int xm, int ym ) {
 		if(!minecraft->platform()->isKeyboardVisible()) {
 			focused = false;
 		}
-		this->msg = input;
+
+		int padding = 3;
+
+		// find portion that can fit inside the textbox
+		int offset = 0;
+		int len = input.length();
+
+		while(minecraft->font->width(input.substr(offset, offset-len)) > this->width - padding)
+			offset++;
+
+		this->msg = input.substr(offset, offset-len);
+
+		// set text to current input
+		this->text = input;
 	}
 
 	if(visible) {
