@@ -1,5 +1,9 @@
-# Minecraft PE for the PlayStation Vita!
+# Minecraft PE
+inset mcpe image :D
+# About
+TBA lol
 
+# Compiling
 to build it, make sure you have the latest VitaSDK from vitasdk.org
 
 ```
@@ -12,7 +16,7 @@ If you want to build the demo; you can add the ``-DDEMO=on`` flag to the cmake l
 
 # Credits
    - Olebeck (graphics, sound, networking)
-   - Li (controls, refining options, menuing)
+   - Li (controls, refining options, menuing) <-- original project!
    - Koutsie (original options menu)
    - PVR_PSP2 developers (GrapheneCt) 
 
