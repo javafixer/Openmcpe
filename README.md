@@ -1,5 +1,5 @@
 # Minecraft PE
-inset mcpe image :D
+insert mcpe image :D
 # About
 TBA lol
 
