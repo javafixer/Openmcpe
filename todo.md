@@ -1,3 +1,4 @@
-- sound
-- controller input not be ignored
-- run at more than 40 fps
+- add serverlist like LCE smartcmd
+- add compatibtle to join bedrock server and LCE smartcmd servers
+- make the game run good
+- make the gui work better and add keybinds
