@@ -5,14 +5,14 @@ TBA lol
 
 # Compiling
 to build it, make sure you have the latest VitaSDK from vitasdk.org
-
+PSVITA
 ```
 cmake -DPUBLISH=on -B build -S handheld/project/vita
 cd build
 make -j$(nproc)
 ```
-
-If you want to build the demo; you can add the ``-DDEMO=on`` flag to the cmake line.
+Win32 version TBA
+Android version TBA
 
 # Credits
    - Olebeck (graphics, sound, networking)
