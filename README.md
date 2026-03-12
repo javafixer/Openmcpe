@@ -29,8 +29,8 @@ Android version TBA
 - Ps3 0%
 
 # Other information:
- - I am learning C so develpment will be buggy
  - VPK is just install-and-play, no additional setup should be required.
- - should be able to play local multiplayer over local wifi, and even cross-play with android/ios running official APK
  - due to the vita having very slow IO speeds, world generation can take awhile on the first time
  - savedata (worlds, options , etc) are stored in ux0:/data/minecraftpe/
+ - To add servers Its located in ux0:data/minecraftpe/games/com.mojang/minecraftpe/server.json for psvita
+ For android its /sdcard/games/com.mojang/minecraftpe/server.json
