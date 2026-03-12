@@ -3,165 +3,185 @@
 #include "ProgressScreen.h"
 #include "../Font.h"
 #include "../../../network/RakNetInstance.h"
+#include <fstream>
+#include <sstream>
+#include <vector>
+#include <string>
 
+#ifdef __APPLE__
+#define SERVER_FILE_PATH "./Documents/server.json"
+#elif defined(ANDROID)
+#define SERVER_FILE_PATH "/sdcard/games/com.mojang/minecraftpe/server.json"
+#elif defined(__VITA__)
+#define SERVER_FILE_PATH "ux0:data/minecraftpe/games/com.mojang/minecraftpe/server.json"
+#else
+#define SERVER_FILE_PATH "server.json"
+#endif
+
+// --------------------- JoinGameScreen ---------------------
 JoinGameScreen::JoinGameScreen()
-:	bJoin(  2, "Join Game"),
-	bBack(  3, "Back"),
-	gamesList(NULL)
+    : bJoin(2, "Join Game"), bBack(3, "Back"), gamesList(nullptr)
 {
-	bJoin.active = false;
-	//gamesList->yInertia = 0.5f;
+    bJoin.active = false;
+
+    // Load servers from JSON
+    loadServersFromJson(SERVER_FILE_PATH);
+
+    // Fallback local server
+    if (manualServers.empty()) {
+        PingedCompatibleServer server;
+        server.name = "My Server";
+        server.address = RakNet::SystemAddress("127.0.0.1", 19132);
+        manualServers.push_back(server);
+    }
 }
 
 JoinGameScreen::~JoinGameScreen()
 {
-	delete gamesList;
+    delete gamesList;
+    gamesList = nullptr;
 }
 
+// --------------------- Minimal JSON Parsing ---------------------
+void JoinGameScreen::loadServersFromJson(const std::string& filepath)
+{
+    std::ifstream file(filepath);
+    if (!file.is_open()) return;
+
+    std::string content, line;
+    while (std::getline(file, line)) content += line;
+
+    size_t pos = 0;
+    while ((pos = content.find("{", pos)) != std::string::npos) {
+        size_t end = content.find("}", pos);
+        if (end == std::string::npos) break;
+
+        std::string block = content.substr(pos, end - pos + 1);
+
+        size_t n1 = block.find("\"name\"");
+        size_t a1 = block.find("\"address\"");
+        if (n1 != std::string::npos && a1 != std::string::npos) {
+            size_t nStart = block.find("\"", n1 + 6) + 1;
+            size_t nEnd = block.find("\"", nStart);
+            size_t aStart = block.find("\"", a1 + 9) + 1;
+            size_t aEnd = block.find("\"", aStart);
+
+            std::string name = block.substr(nStart, nEnd - nStart);
+            std::string addr = block.substr(aStart, aEnd - aStart);
+
+            PingedCompatibleServer server;
+            server.name = name.c_str();
+
+            std::string host = addr;
+            unsigned short port = 19132;
+            size_t colon = addr.find(':');
+            if (colon != std::string::npos) {
+                host = addr.substr(0, colon);
+                port = static_cast<unsigned short>(std::stoi(addr.substr(colon + 1)));
+            }
+
+            server.address = RakNet::SystemAddress(host.c_str(), port);
+            manualServers.push_back(server);
+        }
+
+        pos = end + 1;
+    }
+}
+
+// --------------------- Buttons ---------------------
 void JoinGameScreen::buttonClicked(Button* button)
 {
-	if (button->id == bJoin.id)
-	{
-		if (isIndexValid(gamesList->selectedItem))
-		{
-			PingedCompatibleServer selectedServer = gamesList->copiedServerList[gamesList->selectedItem];
-			minecraft->joinMultiplayer(selectedServer);
-			{
-				bJoin.active = false;
-				bBack.active = false;
-				minecraft->setScreen(new ProgressScreen());
-			}
-		}
-		//minecraft->locateMultiplayer();
-		//minecraft->setScreen(new JoinGameScreen());
-	}
-	if (button->id == bBack.id)
-	{
-		minecraft->cancelLocateMultiplayer();
-		minecraft->screenChooser.setScreen(SCREEN_STARTMENU);
-	}
+    if (button->id == bJoin.id && isIndexValid(gamesList->selectedItem)) {
+        PingedCompatibleServer selectedServer =
+            gamesList->copiedServerList[gamesList->selectedItem];
+        minecraft->joinMultiplayer(selectedServer);
+        bJoin.active = false;
+        bBack.active = false;
+        minecraft->setScreen(new ProgressScreen());
+    }
+
+    if (button->id == bBack.id) {
+        minecraft->cancelLocateMultiplayer();
+        minecraft->screenChooser.setScreen(SCREEN_STARTMENU);
+    }
 }
 
 bool JoinGameScreen::handleBackEvent(bool isDown)
 {
-	if (!isDown)
-	{
-		minecraft->cancelLocateMultiplayer();
-		minecraft->screenChooser.setScreen(SCREEN_STARTMENU);
-	}
-	return true;
+    if (!isDown) {
+        minecraft->cancelLocateMultiplayer();
+        minecraft->screenChooser.setScreen(SCREEN_STARTMENU);
+    }
+    return true;
 }
 
-
-bool JoinGameScreen::isIndexValid( int index )
+// --------------------- Server List ---------------------
+bool JoinGameScreen::isIndexValid(int index)
 {
-	return gamesList && index >= 0 && index < gamesList->getNumberOfItems();
+    return gamesList && index >= 0 && index < gamesList->getNumberOfItems();
 }
 
 void JoinGameScreen::tick()
 {
-	const ServerList& orgServerList = minecraft->raknetInstance->getServerList();
-	ServerList serverList;
-	for (unsigned int i = 0; i < orgServerList.size(); ++i)
-		if (orgServerList[i].name.GetLength() > 0)
-			serverList.push_back(orgServerList[i]);
+    if (!gamesList) return;
 
-	if (serverList.size() != gamesList->copiedServerList.size())
-	{
-		// copy the currently selected item
-		PingedCompatibleServer selectedServer;
-		bool hasSelection = false;
-		if (isIndexValid(gamesList->selectedItem))
-		{
-			selectedServer = gamesList->copiedServerList[gamesList->selectedItem];
-			hasSelection = true;
-		}
+    const ServerList& orgServerList = minecraft->raknetInstance->getServerList();
+    ServerList serverList;
 
-		gamesList->copiedServerList = serverList;
-		gamesList->selectItem(-1, false);
+    for (auto& s : manualServers) serverList.push_back(s);
+    for (auto& s : orgServerList)
+        if (s.name.GetLength() > 0) serverList.push_back(s);
 
-		// re-select previous item if it still exists
-		if (hasSelection)
-		{
-			for (unsigned int i = 0; i < gamesList->copiedServerList.size(); i++)
-			{
-				if (gamesList->copiedServerList[i].address == selectedServer.address)
-				{
-					gamesList->selectItem(i, false);
-					break;
-				}
-			}
-		}
-	} else {
-		for (int i = (int)gamesList->copiedServerList.size()-1; i >= 0 ; --i) {
-			for (int j = 0; j < (int) serverList.size(); ++j)
-				if (serverList[j].address == gamesList->copiedServerList[i].address)
-					gamesList->copiedServerList[i].name = serverList[j].name;
-		}
-	}
+    if (serverList.size() != gamesList->copiedServerList.size()) {
+        gamesList->copiedServerList = serverList;
+        gamesList->selectItem(-1, false);
+    }
 
-	bJoin.active = isIndexValid(gamesList->selectedItem);
+    bJoin.active = isIndexValid(gamesList->selectedItem);
 }
 
+// --------------------- Init / Layout ---------------------
 void JoinGameScreen::init()
 {
-	buttons.push_back(&bJoin);
-	buttons.push_back(&bBack);
+    buttons.push_back(&bJoin);
+    buttons.push_back(&bBack);
 
-	minecraft->raknetInstance->clearServerList();
-	gamesList = new AvailableGamesList(minecraft, width, height);
+    if (minecraft->raknetInstance)
+        minecraft->raknetInstance->clearServerList();
 
-#ifdef ANDROID
-	tabButtons.push_back(&bJoin);
-	tabButtons.push_back(&bBack);
-#endif
+    gamesList = new AvailableGamesList(minecraft, width, height);
 }
 
-void JoinGameScreen::setupPositions() {
-	int yBase = height - 26;
-
-	//#ifdef ANDROID
-	bJoin.y =	yBase;
-	bBack.y =   yBase;
-
-	bBack.width = bJoin.width = 120;
-	//#endif
-
-	// Center buttons
-	bJoin.x = width / 2 - 4 - bJoin.width;
-	bBack.x = width / 2 + 4;
-}
-
-void JoinGameScreen::render( int xm, int ym, float a )
+void JoinGameScreen::setupPositions()
 {
-	bool hasNetwork = minecraft->platform()->isNetworkEnabled(true);
-#ifdef WIN32
-	hasNetwork = hasNetwork && !GetAsyncKeyState(VK_TAB);
-#endif
-
-	renderBackground();
-	if (hasNetwork) gamesList->render(xm, ym, a);
-	Screen::render(xm, ym, a);
-
-	if (hasNetwork) {
-#ifdef RPI
-		std::string s = "Scanning for Local Network Games...";
-#else
-		std::string s = "Scanning for WiFi Games...";
-#endif
-		drawCenteredString(minecraft->font, s, width / 2, 8, 0xffffffff);
-
-		const int textWidth = minecraft->font->width(s);
-		const int spinnerX = width/2 + textWidth / 2 + 6;
-
-		static const char* spinnerTexts[] = {"-", "\\", "|", "/"};
-		int n = ((int)(5.5f * getTimeS()) % 4);
-		drawCenteredString(minecraft->font, spinnerTexts[n], spinnerX, 8, 0xffffffff);
-	} else {
-		std::string s = "WiFi is disabled";
-		const int yy = height / 2 - 8;
-		drawCenteredString(minecraft->font, s, width / 2, yy, 0xffffffff);
-	}
+    int yBase = height - 26;
+    bJoin.y = bBack.y = yBase;
+    bJoin.width = bBack.width = 120;
+    bJoin.x = width / 2 - 124;
+    bBack.x = width / 2 + 4;
 }
 
-bool JoinGameScreen::isInGameScreen() { return false; }
+// --------------------- Rendering ---------------------
+void JoinGameScreen::render(int xm, int ym, float a)
+{
+    bool hasNetwork = minecraft->platform()->isNetworkEnabled(true);
+
+    renderBackground();
+    if (hasNetwork && gamesList) gamesList->render(xm, ym, a);
+    Screen::render(xm, ym, a);
+
+    std::string msg = hasNetwork ? "Scanning for WiFi Games..." : "WiFi is disabled";
+    drawCenteredString(minecraft->font, msg, width / 2, hasNetwork ? 8 : height / 2 - 8, 0xffffffff);
+}
+
+bool JoinGameScreen::isInGameScreen()
+{
+    return false;
+}
+
+// --------------------- Force vtable ---------------------
+void JoinGameScreen::forceVtable() {}
+
+// --------------------- Force vtable link ---------------------
+// Ensures the vtable is emitted during linking on Vita
+JoinGameScreen* _joinGameScreenVtableForce = nullptr;

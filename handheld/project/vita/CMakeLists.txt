@@ -15,13 +15,13 @@ project(minecraftcpp)
 
 include("${VITASDK}/share/vita.cmake" REQUIRED)
 
-set(VITA_APP_NAME "Minecraft PE")
-set(VITA_TITLEID  "MCPE00000")
+set(VITA_APP_NAME "Minecraft: Pocket Edition")
+set(VITA_TITLEID  "MCPE00001")
 set(VITA_VERSION  "00.61")
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
-set(VITA_MKSFOEX_FLAGS "${VITA_MKSFOEX_FLAGS} -d PARENTAL_LEVEL=1")
+set(VITA_MKSFOEX_FLAGS "${VITA_MKSFOEX_FLAGS} -d PARENTAL_LEVEL=7")
 
 set(HANDHELD "${CMAKE_CURRENT_LIST_DIR}/../../src/")
 set(ASSETS_DIR "${CMAKE_CURRENT_LIST_DIR}/../../data")
