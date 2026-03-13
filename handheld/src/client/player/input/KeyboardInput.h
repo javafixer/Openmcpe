@@ -1,14 +1,11 @@
 #ifndef NET_MINECRAFT_CLIENT_PLAYER__KeyboardInput_H__
 #define NET_MINECRAFT_CLIENT_PLAYER__KeyboardInput_H__
 
-//package net.minecraft.client.player;
-
 #include "IMoveInput.h"
 
 class Options;
 class Player;
 
-// @todo: extract a separate MoveInput (-> merge XperiaPlayInput)
 class KeyboardInput: public IMoveInput
 {
 	static const int NumKeys = 10;
@@ -20,6 +17,7 @@ public:
     static const int KEY_JUMP = 4;
     static const int KEY_SNEAK = 5;
 	static const int KEY_CRAFT = 6;
+	static const int KEY_SPRINT = 7;   // NEW sprint key
 
     KeyboardInput(Options* options);
 
@@ -27,6 +25,8 @@ public:
 
 	void setKey(int key, bool state);
     void releaseAllKeys();
+
+	bool sprinting; // current sprint state
 
 protected:
 	bool keys[NumKeys];

@@ -1,0 +1,6 @@
+/mnt/c/Users/miran/Downloads/Openmcpe-master/Openmcpe-master/build/CMakeFiles/mcpe_server.dir
+/mnt/c/Users/miran/Downloads/Openmcpe-master/Openmcpe-master/build/CMakeFiles/edit_cache.dir
+/mnt/c/Users/miran/Downloads/Openmcpe-master/Openmcpe-master/build/CMakeFiles/rebuild_cache.dir
+/mnt/c/Users/miran/Downloads/Openmcpe-master/Openmcpe-master/build/raknet/CMakeFiles/raknet.dir
+/mnt/c/Users/miran/Downloads/Openmcpe-master/Openmcpe-master/build/raknet/CMakeFiles/edit_cache.dir
+/mnt/c/Users/miran/Downloads/Openmcpe-master/Openmcpe-master/build/raknet/CMakeFiles/rebuild_cache.dir

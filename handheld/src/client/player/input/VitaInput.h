@@ -8,6 +8,7 @@
 #include "touchscreen/TouchInputHolder.h"
 #include "MouseBuildInput.h"
 #include "../../../platform/input/Controller.h"
+#include "../LocalPlayer.h"
 
 static const int moveStick = 1;
 static const int lookStick = 2;
@@ -86,14 +87,53 @@ class VitaMoveInput : public KeyboardInput {
 	typedef KeyboardInput super;
 public:
 	VitaMoveInput(Options* options)
-	:	super(options)
+	:	super(options),
+		stickForwardPrev(false),
+		sprintTriggerTime(0)
 	{}
 
 	void tick(Player* player) override {
 		super::tick(player);
-		xa += -Controller::getTransformedX(moveStick, 0.1f, 1.25f, true);
-		ya += -Controller::getTransformedY(moveStick, 0.1f, 1.25f, true);
+
+		float stickX = -Controller::getTransformedX(moveStick, 0.1f, 1.25f, true);
+		float stickY = -Controller::getTransformedY(moveStick, 0.1f, 1.25f, true);
+
+		xa += stickX;
+		ya += stickY;
+
+		// Double-tap left stick forward to sprint.
+		// Push stick past 0.8, release below 0.1, push again within 14 ticks = sprint.
+		LocalPlayer* lp = dynamic_cast<LocalPlayer*>(player);
+		if (lp) {
+			bool stickForward = (stickY > 0.8f);
+			bool stickJustPushed = stickForward && !stickForwardPrev;
+
+			if (stickJustPushed && !sneaking) {
+				if (sprintTriggerTime > 0) {
+					// Second push within window: start sprinting
+					lp->sprinting = true;
+					sprintTriggerTime = 2;
+				} else {
+					// First push: open the double-tap window
+					sprintTriggerTime = 5;
+				}
+			} else {
+				if (sprintTriggerTime > 0)
+					sprintTriggerTime--;
+			}
+
+			// Cancel sprint if sneaking or stick released
+			if (sneaking || ya <= 0.0f) {
+				lp->sprinting = false;
+			}
+
+			stickForwardPrev = stickForward;
+		}
 	}
+
+private:
+	bool stickForwardPrev;
+	int  sprintTriggerTime;
 };
 
 class VitaInputHolder : public IInputHolder {

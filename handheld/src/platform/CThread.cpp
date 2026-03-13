@@ -6,11 +6,14 @@
  *  Copyright 2007 Mojang AB. All rights reserved.
  *
  */
-
 #include "CThread.h"
 
 #if defined(__VITA__)
 #include <psp2/kernel/threadmgr.h>
+#endif
+
+#ifdef STANDALONE_SERVER
+#include <cstddef>
 #endif
 
 static int vita_thread_entry(size_t argc, void* argv) {

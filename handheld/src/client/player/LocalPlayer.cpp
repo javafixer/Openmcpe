@@ -140,16 +140,6 @@ void LocalPlayer::tick() {
 			minecraft->raknetInstance->send(packet);
 		}
 	}
-/*
-    for (int i = 0; i < 4; ++i) {
-        ItemInstance* a = getArmor(i);
-        if (!a) continue;
-
-        ArmorItem* item = (ArmorItem*) a->getItem();
-
-        printf("armor %d: %d\n", i, a->getAuxValue());
-    }
-/**/
 
 	updateArmorTypeHash();
 #ifndef STANDALONE_SERVER
@@ -161,7 +151,6 @@ void LocalPlayer::tick() {
 		}
 	}
 #endif
-	//LOGI("biome: %s\n", level->getBiomeSource()->getBiome((int)x >> 4, (int)z >> 4)->name.c_str());
 }
 
 /*public*/
@@ -180,6 +169,34 @@ void LocalPlayer::aiStep() {
         if (ySlideOffset < 0.2f) ySlideOffset = 0.2f;
     }
 #endif
+
+	// --- Sprint logic ---
+	// Sneaking or not moving forward always cancels sprint
+	if (input->sneaking || input->ya <= 0.0f) {
+		sprinting = false;
+	}
+
+	if (!sprinting && onGround && !input->sneaking && input->ya > 0.8f) {
+		// Count down the double-tap window
+		sprintTriggerTime--;
+		if (sprintTriggerTime > 0) {
+			// Second forward press within window: start sprinting
+			sprinting = true;
+			sprintTriggerTime = 0;
+		} else {
+			// First forward press: open the double-tap window
+			sprintTriggerTime = 7;
+		}
+	}
+
+	// Apply sprint speed multiplier
+	if (sprinting && !abilities.flying) {
+		walkingSpeed = DEFAULT_WALK_SPEED * 1.3f;
+	} else if (!sprinting) {
+		walkingSpeed = DEFAULT_WALK_SPEED;
+	}
+	// --- End sprint logic ---
+
 	if (abilities.mayfly) {
 		// Check for flight toggle
 		if (!wasJumping && input->jumping) {
@@ -192,7 +209,6 @@ void LocalPlayer::aiStep() {
 		if (abilities.flying) {
 			if (input->wantUp) {
 				yd += 0.15f;
-				//xd = zd = 0;
 			}
 			if (input->wantDown) {
 				yd -= 0.15f;
@@ -208,12 +224,6 @@ void LocalPlayer::aiStep() {
 
 	Mob::aiStep();
     super::aiStep();
-
-	//if (onGround && abilities.flying)
-	//	abilities.flying = false;
-
-	if (interpolateOnly())
-		updateAi();
 }
 
 /*public*/
@@ -299,6 +309,7 @@ void LocalPlayer::releaseAllKeys()
 float LocalPlayer::getFieldOfViewModifier() {
 	float targetFov = 1.0f;
 	if(abilities.flying) targetFov *= 1.1f;
+	if(sprinting) targetFov *= 1.1f;
 	targetFov *= ((walkingSpeed * getWalkingSpeedModifier()) / DEFAULT_WALK_SPEED +1) / 2;
 
 	if(isUsingItem() && getUseItem()->id == Item::bow->id) {
@@ -314,6 +325,7 @@ float LocalPlayer::getFieldOfViewModifier() {
 	}
 	return targetFov;
 }
+
 void LocalPlayer::addAdditonalSaveData( CompoundTag* entityTag )
 {
 	super::addAdditonalSaveData(entityTag);
@@ -408,6 +420,8 @@ void LocalPlayer::_init() {
 	descendTriggerTime	= 0;
 	ascending	= false;
 	descending	= false;
+	sprinting	= false;
+	sprintTriggerTime = 0;
 
 	ItemInstance* item = inventory->getSelected();
 	sentInventoryItemId = item? item->id : 0;
@@ -467,7 +481,6 @@ void LocalPlayer::causeFallDamage( float distance )
 		}
 	}
 	super::causeFallDamage(distance);
-
 }
 
 void LocalPlayer::displayClientMessage( const std::string& messageId ) {

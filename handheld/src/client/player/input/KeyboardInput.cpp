@@ -2,11 +2,12 @@
 #include "../../Options.h"
 #include "../../../world/entity/player/Player.h"
 
-KeyboardInput::KeyboardInput( Options* options )
+KeyboardInput::KeyboardInput(Options* options)
 {
-	for (int i = 0; i < NumKeys; ++i)
-		keys[i] = false;
-	this->options = options;
+    for (int i = 0; i < NumKeys; ++i)
+        keys[i] = false;
+    this->options = options;
+    sprinting = false; // initialize sprint
 }
 
 void KeyboardInput::setKey( int key, bool state )
