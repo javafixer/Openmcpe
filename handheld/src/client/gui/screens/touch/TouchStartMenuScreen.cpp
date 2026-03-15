@@ -210,8 +210,10 @@ void StartMenuScreen::buttonClicked(::Button* button) {
         #ifdef APPLE_DEMO_PROMOTION
             minecraft->platform()->createUserInput(DialogDefinitions::DIALOG_DEMO_FEATURE_DISABLED);
         #else
-            minecraft->locateMultiplayer();
-            minecraft->screenChooser.setScreen(SCREEN_JOINGAME);
+			minecraft->platform()->createUserInput(DialogDefinitions::DIALOG_DEMO_FEATURE_DISABLED);
+			// add the server.json implemention
+			// minecraft->locateMultiplayer();
+		// minecraft->screenChooser.setScreen(SCREEN_JOINGAME);
         #endif
 	}
 	if (button->id == bOptions.id)

@@ -30,7 +30,7 @@ JoinGameScreen::JoinGameScreen()
     // Fallback local server
     if (manualServers.empty()) {
         PingedCompatibleServer server;
-        server.name = "My Server";
+        server.name = "to add servers download the file from our github";
         server.address = RakNet::SystemAddress("127.0.0.1", 19132);
         manualServers.push_back(server);
     }

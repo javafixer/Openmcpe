@@ -1,6 +1,7 @@
 MODULE := minecraftpi
-SOURCES := ../../src/main.cpp \
-../../src/main_rpi.cpp \
+
+SOURCES := \
+../../src/main.cpp \
 ../../src/platform/input/Controller.cpp \
 ../../src/platform/input/Keyboard.cpp \
 ../../src/platform/input/Mouse.cpp \
@@ -57,7 +58,6 @@ SOURCES := ../../src/main.cpp \
 ../../src/client/gui/screens/InBedScreen.cpp \
 ../../src/client/gui/screens/IngameBlockSelectionScreen.cpp \
 ../../src/client/gui/screens/JoinGameScreen.cpp \
-../../src/client/gui/screens/MouseUnlockedScreen.cpp \
 ../../src/client/gui/screens/OptionsScreen.cpp \
 ../../src/client/gui/screens/PauseScreen.cpp \
 ../../src/client/gui/screens/ProgressScreen.cpp \
@@ -65,10 +65,6 @@ SOURCES := ../../src/main.cpp \
 ../../src/client/gui/screens/SelectWorldScreen.cpp \
 ../../src/client/gui/screens/StartMenuScreen.cpp \
 ../../src/client/gui/screens/TextEditScreen.cpp \
-../../src/client/gui/screens/touch/TouchIngameBlockSelectionScreen.cpp \
-../../src/client/gui/screens/touch/TouchJoinGameScreen.cpp \
-../../src/client/gui/screens/touch/TouchSelectWorldScreen.cpp \
-../../src/client/gui/screens/touch/TouchStartMenuScreen.cpp \
 ../../src/client/gui/screens/UploadPhotoScreen.cpp \
 ../../src/client/model/ChickenModel.cpp \
 ../../src/client/model/CowModel.cpp \
@@ -85,7 +81,6 @@ SOURCES := ../../src/main.cpp \
 ../../src/client/player/LocalPlayer.cpp \
 ../../src/client/player/RemotePlayer.cpp \
 ../../src/client/player/input/KeyboardInput.cpp \
-../../src/client/player/input/touchscreen/TouchscreenInput.cpp \
 ../../src/client/renderer/Chunk.cpp \
 ../../src/client/renderer/EntityTileRenderer.cpp \
 ../../src/client/renderer/GameRenderer.cpp \
@@ -96,7 +91,6 @@ SOURCES := ../../src/main.cpp \
 ../../src/client/renderer/Tesselator.cpp \
 ../../src/client/renderer/Textures.cpp \
 ../../src/client/renderer/TileRenderer.cpp \
-../../src/client/renderer/gles.cpp \
 ../../src/client/renderer/culling/Frustum.cpp \
 ../../src/client/renderer/entity/ArrowRenderer.cpp \
 ../../src/client/renderer/entity/ChickenRenderer.cpp \
@@ -136,174 +130,34 @@ SOURCES := ../../src/main.cpp \
 ../../src/util/PerfTimer.cpp \
 ../../src/util/PerfRenderer.cpp \
 ../../src/world/Direction.cpp \
-../../src/world/entity/AgableMob.cpp \
 ../../src/world/entity/Entity.cpp \
-../../src/world/entity/EntityFactory.cpp \
-../../src/world/entity/FlyingMob.cpp \
-../../src/world/entity/HangingEntity.cpp \
 ../../src/world/entity/Mob.cpp \
-../../src/world/entity/MobCategory.cpp \
-../../src/world/entity/Motive.cpp \
-../../src/world/entity/Painting.cpp \
-../../src/world/entity/PathfinderMob.cpp \
-../../src/world/entity/SynchedEntityData.cpp \
-../../src/world/entity/ai/control/MoveControl.cpp \
-../../src/world/entity/animal/Animal.cpp \
-../../src/world/entity/animal/Chicken.cpp \
-../../src/world/entity/animal/Cow.cpp \
-../../src/world/entity/animal/Pig.cpp \
-../../src/world/entity/animal/Sheep.cpp \
-../../src/world/entity/animal/WaterAnimal.cpp \
-../../src/world/entity/item/FallingTile.cpp \
-../../src/world/entity/item/ItemEntity.cpp \
-../../src/world/entity/item/PrimedTnt.cpp \
-../../src/world/entity/item/TripodCamera.cpp \
-../../src/world/entity/monster/Creeper.cpp \
-../../src/world/entity/monster/Monster.cpp \
-../../src/world/entity/monster/PigZombie.cpp \
-../../src/world/entity/monster/Skeleton.cpp \
-../../src/world/entity/monster/Spider.cpp \
-../../src/world/entity/monster/Zombie.cpp \
-../../src/world/entity/projectile/Arrow.cpp \
-../../src/world/entity/projectile/Throwable.cpp \
 ../../src/world/entity/player/Inventory.cpp \
 ../../src/world/entity/player/Player.cpp \
-../../src/world/food/SimpleFoodData.cpp \
-../../src/world/inventory/BaseContainerMenu.cpp \
-../../src/world/inventory/ContainerMenu.cpp \
-../../src/world/inventory/FillingContainer.cpp \
-../../src/world/inventory/FurnaceMenu.cpp \
-../../src/world/item/ArmorItem.cpp \
-../../src/world/item/BedItem.cpp \
-../../src/world/item/DyePowderItem.cpp \
 ../../src/world/item/Item.cpp \
 ../../src/world/item/ItemInstance.cpp \
-../../src/world/item/HangingEntityItem.cpp \
-../../src/world/item/HatchetItem.cpp \
-../../src/world/item/HoeItem.cpp \
-../../src/world/item/PickaxeItem.cpp \
-../../src/world/item/ShovelItem.cpp \
-../../src/world/item/crafting/Recipe.cpp \
-../../src/world/item/crafting/ArmorRecipes.cpp \
-../../src/world/item/crafting/Recipes.cpp \
-../../src/world/item/crafting/FurnaceRecipes.cpp \
-../../src/world/item/crafting/OreRecipes.cpp \
-../../src/world/item/crafting/StructureRecipes.cpp \
-../../src/world/item/crafting/ToolRecipes.cpp \
-../../src/world/item/crafting/WeaponRecipes.cpp \
 ../../src/world/level/Explosion.cpp \
 ../../src/world/level/Level.cpp \
-../../src/world/level/LightLayer.cpp \
-../../src/world/level/LightUpdate.cpp \
-../../src/world/level/MobSpawner.cpp \
 ../../src/world/level/Region.cpp \
-../../src/world/level/TickNextTickData.cpp \
-../../src/world/level/biome/Biome.cpp \
-../../src/world/level/biome/BiomeSource.cpp \
 ../../src/world/level/chunk/LevelChunk.cpp \
-../../src/world/level/dimension/Dimension.cpp \
-../../src/world/level/levelgen/CanyonFeature.cpp \
-../../src/world/level/levelgen/DungeonFeature.cpp \
-../../src/world/level/levelgen/LargeCaveFeature.cpp \
-../../src/world/level/levelgen/LargeFeature.cpp \
-../../src/world/level/levelgen/RandomLevelSource.cpp \
-../../src/world/level/levelgen/feature/Feature.cpp \
-../../src/world/level/levelgen/synth/ImprovedNoise.cpp \
-../../src/world/level/levelgen/synth/PerlinNoise.cpp \
-../../src/world/level/levelgen/synth/Synth.cpp \
 ../../src/world/level/material/Material.cpp \
-../../src/world/level/pathfinder/Path.cpp \
-../../src/world/level/storage/ExternalFileLevelStorage.cpp \
-../../src/world/level/storage/ExternalFileLevelStorageSource.cpp \
-../../src/world/level/storage/FolderMethods.cpp \
-../../src/world/level/storage/LevelData.cpp \
-../../src/world/level/storage/LevelStorageSource.cpp \
-../../src/world/level/storage/RegionFile.cpp \
-../../src/world/level/tile/BedTile.cpp \
-../../src/world/level/tile/ChestTile.cpp \
-../../src/world/level/tile/CropTile.cpp \
-../../src/world/level/tile/DoorTile.cpp \
-../../src/world/level/tile/EntityTile.cpp \
-../../src/world/level/tile/FurnaceTile.cpp \
-../../src/world/level/tile/GrassTile.cpp \
-../../src/world/level/tile/HeavyTile.cpp \
-../../src/world/level/tile/LightGemTile.cpp \
-../../src/world/level/tile/MelonTile.cpp \
-../../src/world/level/tile/Mushroom.cpp \
-../../src/world/level/tile/NetherReactor.cpp \
-../../src/world/level/tile/NetherReactorPattern.cpp \
-../../src/world/level/tile/StairTile.cpp \
-../../src/world/level/tile/StemTile.cpp \
-../../src/world/level/tile/StoneSlabTile.cpp \
-../../src/world/level/tile/TallGrass.cpp \
-../../src/world/level/tile/Tile.cpp \
-../../src/world/level/tile/TrapDoorTile.cpp \
-../../src/world/level/tile/entity/ChestTileEntity.cpp \
-../../src/world/level/tile/entity/NetherReactorTileEntity.cpp \
-../../src/world/level/tile/entity/SignTileEntity.cpp \
-../../src/world/level/tile/entity/TileEntity.cpp \
-../../src/world/level/tile/entity/FurnaceTileEntity.cpp \
 ../../src/world/phys/HitResult.cpp
 
-#
-# Build environment
-#
-CC:=g++
-SHELL:=/bin/bash
+CC := g++
+SHELL := /bin/bash
 
-#
-# Setup default vars and paths
-#
-CFLAGS:=-mfloat-abi=hard -march=armv6j -mfpu=vfp -DRPI -DPOSIX -DGFX_SMALLER_CHUNKS -I/opt/vc/include/ -I/opt/vc/include/interface/vcos/pthreads
+CFLAGS := -DPOSIX -DGFX_SMALLER_CHUNKS -DNO_EGL -DUSE_VBO -O2 -g
+LDFLAGS := -lGL -lGLEW -lSDL -lpng ../../src/raknet/libRakNet_static_O1.a
 
-OBJECTS:=$(SOURCES:%.cpp=%.o)
-DEPS:=$(SOURCES:%.cpp=%.d)
+OBJECTS := $(SOURCES:%.cpp=%.o)
 
-OBJDIR=.
-SRCDIR=.
-
-#
-# Build mode specifics
-#
-ifeq ($(BUILD),release)
-	CFLAGS+=-Os -g -DNDEBUG -DPUBLISH
-	OBJDIR=obj/release/d1/d2
-	OBJECTS:=$(patsubst %,$(OBJDIR)/%,$(OBJECTS))
-else
-	CFLAGS+=-O0 -g
-	OBJDIR=obj/debug/d1/d2
-	OBJECTS:=$(patsubst %,$(OBJDIR)/%,$(OBJECTS))
-endif
-
-#
-#
-#
-LDFLAGS:=-L/opt/vc/lib/ -lGLESv1_CM -lEGL -lbcm_host -lpng -lSDL -L. libRakNet_static_O1.a
-
-
-#
-# Targets
-#
 all: $(MODULE)
 
--include $(DEPS)
-
-release:
-	make "BUILD=release"
-
-#$(CC) -MM $(CFLAGS) $*.cpp > $*.d
-
-$(OBJDIR)/%.o: $(SRCDIR)/%.cpp
-	@mkdir -p $(@D)
-	$(CC) -c $(CFLAGS) $< -o $@
-	$(CC) -MM -MT $*.o $(CFLAGS) $*.cpp > $*.d
-	@cp -f $*.d $*.d.tmp
-	@rm -f $*.d.tmp
-
-#@sed -e 's/.*://' -e 's/\$$//' < $*.d.tmp | fmt -1 | sed -e 's/^ *//' -e 's/$$/:/' >> $*.d
-
 $(MODULE): $(OBJECTS)
-	$(CC) $(OBJECTS) $(LDFLAGS) -o $@
+	$(CC) $(OBJECTS) $(LDFLAGS) -o $(MODULE)
+
+%.o: %.cpp
+	$(CC) -c $(CFLAGS) $< -o $@
 
 clean:
-	rm -f $(OBJECTS) $(DEPS) $(MODULE)
+	rm -f $(OBJECTS) $(MODULE)

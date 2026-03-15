@@ -13,7 +13,9 @@
     #include <EGL/egl.h>
 #endif
 #include "platform/log.h"
-
+#ifdef __linux__
+#define NO_EGL
+#endif
 typedef struct AppContext {
 #ifndef NO_EGL
 	EGLDisplay display;
